@@ -1,232 +1,300 @@
+  <svg class="ui-sprite" aria-hidden="true" focusable="false" width="0" height="0">
+    <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></symbol>
+    <symbol id="i-form" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 3v6h6"/><path d="M3.5 9a9 9 0 1 1 .5 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5 5l-9.4 9.4a2.1 2.1 0 0 1-3-3z"/><path d="M18 2l4 4"/></symbol>
+  </svg>
 
-  <!-- BARRA DE CALIBRACIÓN Y PRUEBA (NO SE IMPRIME) -->
-  <div class="toolbar">
-    <button type="button" onclick="document.body.classList.toggle('preview-print-only')">
-      Alternar Vista: Guía / Solo Impresión
-    </button>
-    <label>
-      Offset X (mm):
-      <input type="number" step="0.5" value="0" oninput="document.documentElement.style.setProperty('--offset-x', this.value + 'mm')" />
-    </label>
-    <label>
-      Offset Y (mm):
-      <input type="number" step="0.5" value="0" oninput="document.documentElement.style.setProperty('--offset-y', this.value + 'mm')" />
-    </label>
-    <button type="button" onclick="window.print()">Imprimir (Ctrl+P)</button>
-  </div>
-
-  <!-- ==================== PANEL DE CALIBRACIÓN POR SECCIÓN (NO SE IMPRIME) ==================== -->
-  <button type="button" class="cal-toggle" id="calToggle" title="Abrir calibración">⚙ Calibrar</button>
-
-  <aside class="cal-panel" id="calPanel" aria-hidden="false">
-    <div class="cal-panel-head">
-      <strong>Calibración por item</strong>
-      <button type="button" id="calClose" title="Cerrar panel">×</button>
+  <!-- ==================== BARRA SUPERIOR (NO SE IMPRIME) ==================== -->
+  <header class="toolbar appbar">
+    <div class="appbar-brand">
+      <span class="appbar-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 3h12v18l-6-4-6 4z"/>
+        </svg>
+      </span>
+      <span class="appbar-title">
+        Talonario
+        <small>SPEED GROUPS C.A.</small>
+      </span>
     </div>
 
-    <nav class="cal-sections" id="calSections"></nav>
+    <div class="appbar-actions">
+      <button type="button" id="viewToggle" class="ui-btn ui-btn-ghost" aria-pressed="false">
+        <svg class="ui-icon" aria-hidden="true"><use href="#i-eye"/></svg>
+        <span>Solo impresión</span>
+      </button>
 
-    <div class="cal-controls" id="calControls">
-      <div class="cal-current" id="calCurrent">Selecciona un item</div>
-
-      <div class="cal-axis">
-        <span class="cal-axis-label">Eje X (mm)</span>
-        <div class="cal-btns">
-          <button type="button" data-axis="x" data-delta="-0.5">← 0.5</button>
-          <button type="button" data-axis="x" data-delta="-0.1">← 0.1</button>
-          <output id="calValX">0.0</output>
-          <button type="button" data-axis="x" data-delta="0.1">0.1 →</button>
-          <button type="button" data-axis="x" data-delta="0.5">0.5 →</button>
-        </div>
+      <div class="offset-group" role="group" aria-label="Desplazamiento global">
+        <label class="offset-field">X
+          <input type="number" step="0.5" value="0" aria-label="Desplazamiento global X en milímetros" />
+        </label>
+        <label class="offset-field">Y
+          <input type="number" step="0.5" value="0" aria-label="Desplazamiento global Y en milímetros" />
+        </label>
       </div>
 
-      <div class="cal-axis">
-        <span class="cal-axis-label">Eje Y (mm)</span>
-        <div class="cal-btns">
-          <button type="button" data-axis="y" data-delta="-0.5">↑ 0.5</button>
-          <button type="button" data-axis="y" data-delta="-0.1">↑ 0.1</button>
-          <output id="calValY">0.0</output>
-          <button type="button" data-axis="y" data-delta="0.1">0.1 ↓</button>
-          <button type="button" data-axis="y" data-delta="0.5">0.5 ↓</button>
-        </div>
-      </div>
+      <button type="button" id="appPrint" class="ui-btn ui-btn-ghost">
+        <svg class="ui-icon" aria-hidden="true"><use href="#i-printer"/></svg>
+        Imprimir
+      </button>
 
-      <div class="cal-axis">
-        <span class="cal-axis-label">Tamaño (pt)</span>
-        <div class="cal-btns">
-          <button type="button" data-axis="s" data-delta="-1">− 1</button>
-          <button type="button" data-axis="s" data-delta="-0.5">− 0.5</button>
-          <output id="calValS">0.0</output>
-          <button type="button" data-axis="s" data-delta="0.5">0.5 +</button>
-          <button type="button" data-axis="s" data-delta="1">1 +</button>
-        </div>
-      </div>
+      <button type="button" id="dataToggle" class="ui-btn" aria-expanded="false" aria-controls="dataPanel">
+        <svg class="ui-icon" aria-hidden="true"><use href="#i-form"/></svg>
+        Datos
+      </button>
 
-      <div class="cal-actions">
-        <button type="button" id="calResetSection">Reset item</button>
-        <button type="button" id="calResetAll">Reset todo</button>
-        <button type="button" id="calResetSize">Auto tamaño</button>
-      </div>
-
-      <button type="button" class="cal-import" id="calImport">📂 Cargar calibración desde HTML</button>
-      <input type="file" id="calFile" accept=".html,text/html" hidden />
-      <div class="cal-msg" id="calMsg"></div>
-
-      <button type="button" class="cal-save" id="calSave">💾 Guardar calibración</button>
-      <p class="cal-hint">Mueve solo el dato impreso; los rótulos, líneas y encabezados preimpresos quedan fijos. Forma de Pago, Ley IVA/BCV y Totales se calibran item por item. <b>Cargar desde HTML</b> lee los valores de un imp.html calibrado. <b>Guardar calibración</b> los escribe en <b>src/calibration.json</b> (solo con <b>vite dev</b>).</p>
+      <button type="button" id="calToggle" class="ui-btn ui-btn-primary" aria-expanded="false" aria-controls="calPanel">
+        <svg class="ui-icon" aria-hidden="true"><use href="#i-sliders"/></svg>
+        Calibrar
+      </button>
     </div>
-  </aside>
+  </header>
 
-  <!-- ==================== PANEL DE DATOS A IMPRIMIR (NO SE IMPRIME) ==================== -->
-  <button type="button" class="data-toggle" id="dataToggle" title="Abrir datos">📝 Datos</button>
-  <span class="spandex">
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
-  
-  <aside class="data-panel" id="dataPanel">
-    <div class="data-head">
-      <strong>Datos de impresión</strong>
-      <button type="button" id="dataClose" title="Cerrar panel">×</button>
+  <section class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+    <header class="drawer-head">
+      <h2 class="drawer-title" id="drawerTitle">Talonario</h2>
+      <button type="button" class="ui-icon-btn" id="drawerClose" aria-label="Cerrar panel">
+        <svg class="ui-icon" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </header>
+
+    <div class="drawer-tabs" role="tablist" aria-label="Paneles">
+      <button type="button" class="drawer-tab" role="tab" data-tab="datos" id="tabDatos" aria-controls="dataPanel" aria-selected="true">
+        <svg class="ui-icon" aria-hidden="true"><use href="#i-form"/></svg>
+        Datos
+      </button>
+      <button type="button" class="drawer-tab" role="tab" data-tab="cal" id="tabCal" aria-controls="calPanel" aria-selected="false" tabindex="-1">
+        <svg class="ui-icon" aria-hidden="true"><use href="#i-sliders"/></svg>
+        Calibrar
+      </button>
     </div>
 
-    <div class="data-body">
-      <div class="d-group">
-        <h4>Emisión</h4>
-        <div class="d-grid">
-          <label class="d-field full">Lugar de emisión
-            <input id="d-lugar" type="text" autocomplete="off" placeholder="PUERTO ORDAZ" />
-          </label>
-          <label class="d-field">Día (DD)
-            <input id="d-dia" type="text" maxlength="2" inputmode="numeric" placeholder="17" />
-          </label>
-          <label class="d-field">Mes (MM)
-            <input id="d-mes" type="text" maxlength="2" inputmode="numeric" placeholder="10" />
-          </label>
-          <label class="d-field">Año (AAAA)
-            <input id="d-anio" type="text" maxlength="4" inputmode="numeric" placeholder="2026" />
-          </label>
+    <!-- ==================== PANEL DE DATOS A IMPRIMIR (NO SE IMPRIME) ==================== -->
+    <aside class="drawer-panel" id="dataPanel" role="tabpanel" aria-labelledby="tabDatos" hidden>
+      <div class="data-body">
+        <div class="d-group">
+          <h4>Emisión</h4>
+          <div class="d-grid">
+            <label class="d-field full">Lugar de emisión
+              <input id="d-lugar" type="text" autocomplete="off" placeholder="PUERTO ORDAZ" />
+            </label>
+            <label class="d-field">Día (DD)
+              <input id="d-dia" type="text" maxlength="2" inputmode="numeric" placeholder="17" />
+            </label>
+            <label class="d-field">Mes (MM)
+              <input id="d-mes" type="text" maxlength="2" inputmode="numeric" placeholder="10" />
+            </label>
+            <label class="d-field">Año (AAAA)
+              <input id="d-anio" type="text" maxlength="4" inputmode="numeric" placeholder="2026" />
+            </label>
+          </div>
         </div>
+
+        <div class="d-group">
+          <h4>Cliente</h4>
+          <div class="d-grid">
+            <label class="d-field full">Nombre o razón social
+              <input id="d-nombre" type="text" autocomplete="off" placeholder="SUMINISTROS INDUSTRIALES CARONÍ, C.A." />
+            </label>
+            <label class="d-field full">Domicilio fiscal
+              <textarea id="d-domicilio" rows="2" placeholder="ZONA INDUSTRIAL UNARE II, CALLE NEVERÍ..."></textarea>
+            </label>
+            <label class="d-field">R.I.F. ó C.I.
+              <input id="d-rif" type="text" autocomplete="off" placeholder="J-40125896-3" />
+            </label>
+            <label class="d-field">Teléfono
+              <input id="d-telefono" type="text" autocomplete="off" placeholder="(0286) 951.44.12" />
+            </label>
+            <label class="d-field full">Condiciones de pago
+              <input id="d-cond" type="text" autocomplete="off" placeholder="CONTADO" />
+            </label>
+          </div>
+        </div>
+
+        <div class="d-group">
+          <h4>Empresas guardadas</h4>
+          <div class="d-grid">
+            <label class="d-field full">Selecciona una empresa
+              <select id="d-empresa-select">
+                <option value="">— Selecciona una empresa —</option>
+              </select>
+            </label>
+          </div>
+          <div class="d-empresa-actions">
+            <button type="button" id="d-empresa-save">
+              <svg class="ui-icon" aria-hidden="true"><use href="#i-save"/></svg>
+              Guardar empresa actual
+            </button>
+          </div>
+          <p class="d-empresa-msg" id="d-empresa-msg" role="status" aria-live="polite"></p>
+          <p class="data-hint">Guarda Nombre, Domicilio fiscal, R.I.F./C.I. y Teléfono en <code>src/empresas.json</code>.</p>
+        </div>
+
+        <div class="d-group">
+          <h4>Renglones</h4>
+          <div class="d-rows-head">
+            <div class="d-line1"><span>N°</span><span>Descripción</span></div>
+            <div class="d-line2"><span>Cant.</span><span>Precio</span><span>E</span><span>Monto</span></div>
+          </div>
+          <div class="d-rows" id="d-rows"></div>
+          <p class="data-hint">Escribe el N° de renglón y el Monto a mano; no se generan ni se calculan.</p>
+        </div>
+
+        <div class="d-group">
+          <h4>Forma de pago</h4>
+          <div class="d-checks">
+            <label><input type="checkbox" id="d-efectivo" /> Efectivo</label>
+            <label><input type="checkbox" id="d-debito" /> Tarj. de Débito</label>
+            <label><input type="checkbox" id="d-credito" /> Tarj. de Crédito</label>
+          </div>
+          <div class="d-grid" style="margin-top: 10px;">
+            <label class="d-field full">Transferencia
+              <input id="d-transferencia" type="text" autocomplete="off" placeholder="#88492014 (Bs. 37.740,00)" />
+            </label>
+            <label class="d-field full">Pago móvil
+              <input id="d-movil" type="text" autocomplete="off" placeholder="—" />
+            </label>
+            <label class="d-field full">Banco
+              <input id="d-banco" type="text" autocomplete="off" placeholder="BANESCO BANCO UNIVERSAL" />
+            </label>
+          </div>
+        </div>
+
+        <div class="d-group">
+          <h4>Ley IVA / BCV</h4>
+          <div class="d-grid">
+            <label class="d-field">Tasa de cambio
+              <input id="d-tasa" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
+            </label>
+            <label class="d-field">Monto en divisas
+              <input id="d-divisas" type="text" autocomplete="off" placeholder="" />
+            </label>
+          </div>
+        </div>
+
+        <div class="d-group">
+          <h4>Totales</h4>
+          <div class="d-grid">
+            <label class="d-field">I.V.A. (%)
+              <input id="d-iva-pct" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
+            </label>
+            <label class="d-field">Base I.V.A. (SOBRE Bs.)
+              <input id="d-iva-base" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
+            </label>
+            <label class="d-field">Base IGTF (3%)
+              <input id="d-igtf-base" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
+            </label>
+            <label class="d-field">BASE Bs.
+              <input id="d-base" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
+            </label>
+            <label class="d-field">OTROS Bs.
+              <input id="d-otros" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
+            </label>
+            <label class="d-field">I.V.A. Bs.
+              <input id="d-iva" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
+            </label>
+            <label class="d-field">IGTF Bs.
+              <input id="d-igtf" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
+            </label>
+            <label class="d-field full">TOTAL A PAGAR Bs.
+              <input id="d-total" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
+            </label>
+          </div>
+          <p class="data-hint">Todos los montos y totales se imprimen tal como los escribas. No hay cálculo automático.</p>
+        </div>
+
+        <p class="data-hint">Los datos quedan guardados en este navegador. <b>Guardar HTML</b> crea una copia fija, sin panel, lista para imprimir.</p>
       </div>
 
-      <div class="d-group">
-        <h4>Cliente</h4>
-        <div class="d-grid">
-          <label class="d-field full">Nombre o razón social
-            <input id="d-nombre" type="text" autocomplete="off" placeholder="SUMINISTROS INDUSTRIALES CARONÍ, C.A." />
-          </label>
-          <label class="d-field full">Domicilio fiscal
-            <textarea id="d-domicilio" rows="2" placeholder="ZONA INDUSTRIAL UNARE II, CALLE NEVERÍ..."></textarea>
-          </label>
-          <label class="d-field">R.I.F. ó C.I.
-            <input id="d-rif" type="text" autocomplete="off" placeholder="J-40125896-3" />
-          </label>
-          <label class="d-field">Teléfono
-            <input id="d-telefono" type="text" autocomplete="off" placeholder="(0286) 951.44.12" />
-          </label>
-          <label class="d-field full">Condiciones de pago
-            <input id="d-cond" type="text" autocomplete="off" placeholder="CONTADO" />
-          </label>
-        </div>
+      <div class="data-foot">
+        <button type="button" class="d-clear" id="d-clear">
+          <svg class="ui-icon" aria-hidden="true"><use href="#i-trash"/></svg>
+          Limpiar
+        </button>
+        <button type="button" class="d-print" id="d-print">
+          <svg class="ui-icon" aria-hidden="true"><use href="#i-printer"/></svg>
+          Imprimir
+        </button>
+        <button type="button" class="d-save" id="d-save">
+          <svg class="ui-icon" aria-hidden="true"><use href="#i-save"/></svg>
+          Guardar
+        </button>
       </div>
+    </aside>
 
-      <div class="d-group">
-        <h4>Empresas guardadas</h4>
-        <div class="d-grid">
-          <label class="d-field full">Selecciona una empresa
-            <select id="d-empresa-select">
-              <option value="">— Selecciona una empresa —</option>
-            </select>
-          </label>
+    <!-- ==================== PANEL DE CALIBRACIÓN POR SECCIÓN (NO SE IMPRIME) ==================== -->
+    <aside class="drawer-panel" id="calPanel" role="tabpanel" aria-labelledby="tabCal" hidden>
+      <nav class="cal-sections" id="calSections" aria-label="Secciones calibrables"></nav>
+
+      <div class="cal-controls" id="calControls">
+        <div class="cal-current" id="calCurrent">Selecciona un item</div>
+
+        <div class="cal-axis">
+          <span class="cal-axis-label">Eje X (mm)</span>
+          <div class="cal-btns">
+            <button type="button" data-axis="x" data-delta="-0.5">← 0.5</button>
+            <button type="button" data-axis="x" data-delta="-0.1">← 0.1</button>
+            <output id="calValX">0.0</output>
+            <button type="button" data-axis="x" data-delta="0.1">0.1 →</button>
+            <button type="button" data-axis="x" data-delta="0.5">0.5 →</button>
+          </div>
         </div>
-        <div class="d-empresa-actions">
-          <button type="button" id="d-empresa-save">💾 Guardar empresa actual</button>
+
+        <div class="cal-axis">
+          <span class="cal-axis-label">Eje Y (mm)</span>
+          <div class="cal-btns">
+            <button type="button" data-axis="y" data-delta="-0.5">↑ 0.5</button>
+            <button type="button" data-axis="y" data-delta="-0.1">↑ 0.1</button>
+            <output id="calValY">0.0</output>
+            <button type="button" data-axis="y" data-delta="0.1">0.1 ↓</button>
+            <button type="button" data-axis="y" data-delta="0.5">0.5 ↓</button>
+          </div>
         </div>
-        <p class="d-empresa-msg" id="d-empresa-msg"></p>
-        <p class="data-hint">Guarda Nombre, Domicilio fiscal, R.I.F./C.I. y Teléfono en <code>src/empresas.json</code>.</p>
+
+        <div class="cal-axis">
+          <span class="cal-axis-label">Tamaño (pt)</span>
+          <div class="cal-btns">
+            <button type="button" data-axis="s" data-delta="-1">− 1</button>
+            <button type="button" data-axis="s" data-delta="-0.5">− 0.5</button>
+            <output id="calValS">0.0</output>
+            <button type="button" data-axis="s" data-delta="0.5">0.5 +</button>
+            <button type="button" data-axis="s" data-delta="1">1 +</button>
+          </div>
+        </div>
+
+        <div class="cal-actions">
+          <button type="button" id="calResetSection">Reset item</button>
+          <button type="button" id="calResetAll">Reset todo</button>
+          <button type="button" id="calResetSize">Auto tamaño</button>
+        </div>
+
+        <button type="button" class="cal-import" id="calImport">
+          <svg class="ui-icon" aria-hidden="true"><use href="#i-folder"/></svg>
+          Cargar calibración desde HTML
+        </button>
+        <input type="file" id="calFile" accept=".html,text/html" hidden />
+        <div class="cal-msg" id="calMsg" role="status" aria-live="polite"></div>
+
+        <button type="button" class="cal-save" id="calSave">
+          <svg class="ui-icon" aria-hidden="true"><use href="#i-save"/></svg>
+          Guardar calibración
+        </button>
+        <p class="cal-hint">Mueve solo el dato impreso; los rótulos, líneas y encabezados preimpresos quedan fijos. Forma de Pago, Ley IVA/BCV y Totales se calibran item por item. <b>Cargar desde HTML</b> lee los valores de un imp.html calibrado. <b>Guardar calibración</b> los escribe en <b>src/calibration.json</b> (solo con <b>vite dev</b>).</p>
       </div>
+    </aside>
+  </section>
 
-      <div class="d-group">
-        <h4>Renglones</h4>
-        <div class="d-rows-head">
-          <div class="d-line1"><span>N°</span><span>Descripción</span></div>
-          <div class="d-line2"><span>Cant.</span><span>Precio</span><span>E</span><span>Monto</span></div>
-        </div>
-        <div class="d-rows" id="d-rows"></div>
-        <p class="data-hint">Escribe el N° de renglón y el Monto a mano; no se generan ni se calculan.</p>
-      </div>
-
-      <div class="d-group">
-        <h4>Forma de pago</h4>
-        <div class="d-checks">
-          <label><input type="checkbox" id="d-efectivo" /> Efectivo</label>
-          <label><input type="checkbox" id="d-debito" /> Tarj. de Débito</label>
-          <label><input type="checkbox" id="d-credito" /> Tarj. de Crédito</label>
-        </div>
-        <div class="d-grid" style="margin-top: 8px;">
-          <label class="d-field full">Transferencia
-            <input id="d-transferencia" type="text" autocomplete="off" placeholder="#88492014 (Bs. 37.740,00)" />
-          </label>
-          <label class="d-field full">Pago móvil
-            <input id="d-movil" type="text" autocomplete="off" placeholder="—" />
-          </label>
-          <label class="d-field full">Banco
-            <input id="d-banco" type="text" autocomplete="off" placeholder="BANESCO BANCO UNIVERSAL" />
-          </label>
-        </div>
-      </div>
-
-      <div class="d-group">
-        <h4>Ley IVA / BCV</h4>
-        <div class="d-grid">
-          <label class="d-field">Tasa de cambio
-            <input id="d-tasa" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
-          </label>
-          <label class="d-field">Monto en divisas
-            <input id="d-divisas" type="text" autocomplete="off" placeholder="" />
-          </label>
-        </div>
-      </div>
-
-      <div class="d-group">
-        <h4>Totales</h4>
-        <div class="d-grid">
-          <label class="d-field">I.V.A. (%)
-            <input id="d-iva-pct" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
-          </label>
-          <label class="d-field">Base I.V.A. (SOBRE Bs.)
-            <input id="d-iva-base" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
-          </label>
-          <label class="d-field">Base IGTF (3%)
-            <input id="d-igtf-base" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
-          </label>
-          <label class="d-field">BASE Bs.
-            <input id="d-base" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
-          </label>
-          <label class="d-field">OTROS Bs.
-            <input id="d-otros" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
-          </label>
-          <label class="d-field">I.V.A. Bs.
-            <input id="d-iva" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
-          </label>
-          <label class="d-field">IGTF Bs.
-            <input id="d-igtf" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
-          </label>
-          <label class="d-field full">TOTAL A PAGAR Bs.
-            <input id="d-total" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
-          </label>
-        </div>
-        <p class="data-hint">Todos los montos y totales se imprimen tal como los escribas. No hay cálculo automático.</p>
-      </div>
-
-      <p class="data-hint">Los datos quedan guardados en este navegador. <b>Guardar HTML</b> crea una copia fija, sin panel, lista para imprimir.</p>
-    </div>
-
-    <div class="data-foot">
-      <button type="button" class="d-clear" id="d-clear">🧹 Limpiar</button>
-      <button type="button" class="d-print" id="d-print">🖨 Imprimir</button>
-      <button type="button" class="d-save" id="d-save">💾 Guardar</button>
-    </div>
-  </aside>
-
+  <main class="workspace">
   <div class="page-letter">
     <!-- ==================== ENCABEZADO (PREIMPRESO) ==================== -->
     <header class="header preprinted">
@@ -565,4 +633,4 @@
       </div>
     </footer>
   </div>
-</span>
+  </main>

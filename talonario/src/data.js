@@ -426,9 +426,6 @@ export function initData() {
   applyState(state)
   render()
 
-  const panel = document.getElementById('dataPanel')
-  const toggle = document.getElementById('dataToggle')
-
   ;[['d-dia', 2], ['d-mes', 2], ['d-anio', 4]].forEach((pair) => {
     const el = document.getElementById(pair[0])
     const size = pair[1]
@@ -454,22 +451,6 @@ export function initData() {
   document.querySelectorAll('#dataPanel input, #dataPanel textarea').forEach((el) => {
     el.addEventListener('input', function () { this.title = this.value; render() })
     el.addEventListener('change', render)
-  })
-
-  toggle.addEventListener('click', () => {
-    const calPanel = document.getElementById('calPanel')
-    const calToggle = document.getElementById('calToggle')
-    if (calPanel) calPanel.classList.remove('open')
-    if (calToggle) calToggle.style.display = ''
-    document.body.classList.add('data-open')
-    panel.classList.add('open')
-    toggle.style.display = 'none'
-  })
-
-  document.getElementById('dataClose').addEventListener('click', () => {
-    panel.classList.remove('open')
-    toggle.style.display = ''
-    document.body.classList.remove('data-open')
   })
 
   document.getElementById('d-print').addEventListener('click', () => window.print())

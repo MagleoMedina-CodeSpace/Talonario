@@ -354,24 +354,6 @@ export function initCalibration() {
   wireOffsetInputs()
   refreshControls()
 
-  const panel = document.getElementById('calPanel')
-  const toggle = document.getElementById('calToggle')
-
-  toggle.addEventListener('click', () => {
-    const dataPanel = document.getElementById('dataPanel')
-    const dataToggle = document.getElementById('dataToggle')
-    if (dataPanel) dataPanel.classList.remove('open')
-    if (dataToggle) dataToggle.style.display = ''
-    document.body.classList.remove('data-open')
-    panel.classList.add('open')
-    toggle.style.display = 'none'
-  })
-
-  document.getElementById('calClose').addEventListener('click', () => {
-    panel.classList.remove('open')
-    toggle.style.display = ''
-  })
-
   document.getElementById('calControls').addEventListener('click', (ev) => {
     const btn = ev.target.closest('button[data-axis]')
     if (!btn) return
