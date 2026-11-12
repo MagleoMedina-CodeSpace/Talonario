@@ -8,10 +8,11 @@ document.getElementById('app').innerHTML = templateHtml
 
 // Orden importa: calibration envuelve las celdas en .cal-cell antes de que
 // data renderice los valores dentro de ellas. Empresas depende de data.
-initCalibration()
-initData()
-initEmpresas()
-initShell()
+initCalibration().then(() => {
+  initData()
+  initEmpresas()
+  initShell()
+})
 
 // Shell del drawer: tabs, backdrop, Escape, focus trap y alternar vista.
 function initShell() {

@@ -147,7 +147,7 @@
             <div class="d-line2"><span>Cant.</span><span>Precio</span><span>E</span><span>Monto</span></div>
           </div>
           <div class="d-rows" id="d-rows"></div>
-          <p class="data-hint">Escribe el N° de renglón y el Monto a mano; no se generan ni se calculan.</p>
+          <p class="data-hint">Escribe el N° de renglón; el Monto se calcula como Cant. × Precio y puedes editarlo a mano.</p>
         </div>
 
         <div class="d-group">
@@ -180,6 +180,13 @@
               <input id="d-divisas" type="text" autocomplete="off" placeholder="" />
             </label>
           </div>
+          <div class="d-empresa-actions">
+            <button type="button" id="d-tasa-auto">
+              <svg class="ui-icon" aria-hidden="true"><use href="#i-reset"/></svg>
+              Tasa automática
+            </button>
+          </div>
+          <p class="d-empresa-msg" id="d-tasa-msg" role="status" aria-live="polite"></p>
         </div>
 
         <div class="d-group">
@@ -210,7 +217,7 @@
               <input id="d-total" type="text" autocomplete="off" inputmode="decimal" placeholder="" />
             </label>
           </div>
-          <p class="data-hint">Todos los montos y totales se imprimen tal como los escribas. No hay cálculo automático.</p>
+          <p class="data-hint">El IVA (16%) se suma sobre la base de los renglones con IVA (E vacío). Si la factura es 100% exenta, todo va a Base Bs.; si es compuesta, los exentos van a Otros Bs. Usa <b>Tasa automática</b> para actualizar la tasa; también es editable.</p>
         </div>
 
         <p class="data-hint">Los datos quedan guardados en este navegador. <b>Guardar HTML</b> crea una copia fija, sin panel, lista para imprimir.</p>
@@ -289,7 +296,7 @@
           <svg class="ui-icon" aria-hidden="true"><use href="#i-save"/></svg>
           Guardar calibración
         </button>
-        <p class="cal-hint">Mueve solo el dato impreso; los rótulos, líneas y encabezados preimpresos quedan fijos. Forma de Pago, Ley IVA/BCV y Totales se calibran item por item. <b>Cargar desde HTML</b> lee los valores de un imp.html calibrado. <b>Guardar calibración</b> los escribe en <b>src/calibration.json</b> (solo con <b>vite dev</b>).</p>
+        <p class="cal-hint">Mueve solo el dato impreso; los rótulos, líneas y encabezados preimpresos quedan fijos. Forma de Pago, Ley IVA/BCV y Totales se calibran item por item. <b>Cargar desde HTML</b> lee los valores de un imp.html calibrado. <b>Guardar calibración</b> los escribe en SQLite (<b>data/talonario.db</b>) y de respaldo en <b>src/calibration.json</b> (solo con <b>vite dev</b>).</p>
       </div>
     </aside>
   </section>

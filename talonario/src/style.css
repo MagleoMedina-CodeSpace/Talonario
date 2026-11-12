@@ -83,7 +83,7 @@
 
     body {
       background-color: var(--ui-bg, #0e0f11);
-      color: var(--ui-text, #e9ebee);
+      color: black;
       font-family: var(--ui-font, Arial, Helvetica, sans-serif);
       display: flex;
       flex-direction: column;
@@ -150,7 +150,7 @@
     .appbar-title small {
       font: 600 9.5px var(--ui-font, Arial, sans-serif);
       letter-spacing: .12em;
-      color: #7a8089;
+      color: #e9ebee;
       text-transform: uppercase;
     }
 
@@ -545,8 +545,8 @@
       border-right: none;
     }
 
-    .th-renglon { font-size: 7.2pt !important; letter-spacing: -0.2px; }
-    .th-cant    { font-size: 7.2pt !important; letter-spacing: -0.3px; }
+    .th-renglon { font-size: 6.3pt !important; letter-spacing: -0.2px; }
+    .th-cant    { font-size: 6.2pt !important; letter-spacing: -0.3px; }
     .th-precio  { font-size: 6.8pt !important; }
 
     .items-table tbody td {
@@ -991,6 +991,13 @@
       text-overflow: ellipsis;
     }
 
+    /* Mismo origen de calibración en los cinco renglones de totales:
+       el dato ocupa todo el ancho y se alinea a la derecha */
+    .tot-val-cell .cal-cell {
+      width: 100%;
+      text-align: right;
+    }
+
     /* La tasa cambiaria necesita aire para los descendentes (g, p, y) y no debe cortar dígitos */
     .inline-line .cal-cell {
       line-height: 1.25;
@@ -1041,8 +1048,8 @@
   --ui-border: #33373d;
   --ui-border-soft: #2a2d32;
   --ui-text: #e9ebee;
-  --ui-text-dim: #a6abb3;
-  --ui-text-mute: #7a8089;
+  --ui-text-dim: #e9ebee;
+  --ui-text-mute: #e9ebee;
   --ui-accent: #e1a413;
   --ui-accent-hi: #f3b625;
   --ui-accent-ink: #16110a;
@@ -1584,7 +1591,10 @@ body.drawer-open .drawer-backdrop { opacity: 1; pointer-events: auto; }
 }
 .cal-hint b { color: var(--ui-text-dim); }
 
-.cal-target { outline: 2px dashed var(--ui-accent) !important; outline-offset: -1px; }
+@media screen {
+  .cal-target { outline: 2px dashed var(--ui-accent) !important; outline-offset: -1px; }
+}
+body.preview-print-only .cal-target { outline: none !important; }
 
 /* ---------- Responsive ---------- */
 @media (min-width: 1380px) {

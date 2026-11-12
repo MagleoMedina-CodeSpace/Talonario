@@ -97,6 +97,36 @@ function buildState() {
   return s
 }
 
+// Estado de la base SQLite sobre el baseline del JSON.
+function mergeState(src) {
+  const s = buildState()
+  if (!src || typeof src !== 'object') return s
+  if (src.offset) {
+    s.offset = {
+      x: round1(clamp(+src.offset.x || 0)),
+      y: round1(clamp(+src.offset.y || 0))
+    }
+  }
+  ALL.forEach((item) => {
+    const e = src[item.id]
+    if (!e) return
+    const size = e.s != null && !isNaN(+e.s) ? round1(clampSize(+e.s)) : null
+    s[item.id] = { x: round1(clamp(+e.x || 0)), y: round1(clamp(+e.y || 0)), s: size }
+  })
+  return s
+}
+
+async function loadState() {
+  const base = buildState()
+  try {
+    const res = await fetch('/__calibration', { cache: 'no-store' })
+    if (!res.ok) return base
+    return mergeState(await res.json())
+  } catch (e) {
+    return base
+  }
+}
+
 function wrapCells() {
   document.querySelectorAll('.items-table tbody td').forEach((cell) => {
     if (cell.firstElementChild && cell.firstElementChild.classList.contains('cal-cell')) return
@@ -338,14 +368,14 @@ export async function saveCalibration() {
       body: JSON.stringify(state, null, 2)
     })
     if (!res.ok) throw new Error('HTTP ' + res.status)
-    if (msg) msg.textContent = '✓ Calibración guardada en src/calibration.json'
+    if (msg) msg.textContent = '✓ Calibración guardada en la base de datos'
   } catch (e) {
     if (msg) msg.textContent = 'No se pudo guardar (¿vite dev corriendo?). ' + e.message
   }
 }
 
-export function initCalibration() {
-  state = buildState()
+export async function initCalibration() {
+  state = await loadState()
   wrapCells()
   wrapItems()
   buildNav()
@@ -375,7 +405,7 @@ export function initCalibration() {
     reader.onload = () => {
       const count = importFromText(String(reader.result))
       msg.textContent = count > 0
-        ? 'Calibración cargada: ' + count + ' valores. Pulsa "Guardar calibración" para fijarla en calibration.json.'
+        ? 'Calibración cargada: ' + count + ' valores. Pulsa "Guardar calibración" para fijarla en la base de datos.'
         : 'No se encontraron variables --cal-* en ese archivo.'
       fileInput.value = ''
     }

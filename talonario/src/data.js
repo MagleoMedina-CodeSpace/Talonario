@@ -11,6 +11,15 @@ try {
 }
 
 const fmt = (n) => moneyFmt.format(n || 0)
+
+let tasaFmt
+try {
+  tasaFmt = new Intl.NumberFormat('es-VE', { minimumFractionDigits: 4, maximumFractionDigits: 4 })
+} catch (e) {
+  tasaFmt = { format: (n) => (n || 0).toFixed(4).replace('.', ',') }
+}
+
+const fmtTasa = (n) => tasaFmt.format(n || 0)
 const pad = (n, size) => { let s = String(n); while (s.length < size) s = '0' + s; return s }
 const text = (el, v) => { if (el) el.textContent = v }
 const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : '' }
@@ -332,6 +341,101 @@ function fitAll() {
   })
 }
 
+const IVA_RATE = 0.16
+const TASA_URL = 'https://api.gocambio.app/api/v1/prices/USD'
+
+function setMoney(id, n) {
+  const el = document.getElementById(id)
+  if (el) el.value = fmt(n || 0)
+}
+
+// Monto recibido en divisas = Total Bs. / tasa.
+function calcDivisas() {
+  const el = document.getElementById('d-divisas')
+  if (!el) return
+  const tasa = num(val('d-tasa'))
+  const total = num(val('d-total'))
+  el.value = tasa > 0 && total > 0 ? '$' + fmt(total / tasa) : ''
+}
+
+// Monto del renglón = Cant. × Precio (neto, sin IVA). Sigue editable.
+function calcMonto(row) {
+  const cantEl = row.querySelector('.d-cant')
+  const precioEl = row.querySelector('.d-precio')
+  const montoEl = row.querySelector('.d-monto')
+  if (!montoEl) return
+  const has = cantEl.value.trim() || precioEl.value.trim()
+  const monto = num(cantEl.value) * num(precioEl.value)
+  montoEl.value = has && monto > 0 ? fmt(monto) : ''
+}
+
+// Recalcula Base Bs., Otros Bs., I.V.A. Bs. y Total desde los renglones.
+// El IVA (16%) se suma sobre la base. E marcado = exento.
+// Factura 100% exenta: todo va a Base Bs. Factura compuesta: exentos a Otros Bs.
+function calcTotales(clearIfEmpty) {
+  let base = 0, otros = 0, conIva = false, exento = false
+  rowEls().forEach((row) => {
+    const monto = num(row.querySelector('.d-monto').value)
+    if (!(monto > 0)) return
+    if (row.querySelector('.d-e').checked) {
+      exento = true
+      otros += monto
+    } else {
+      conIva = true
+      base += monto
+    }
+  })
+  if (!conIva && !exento) {
+    if (!clearIfEmpty) return
+    setVal('d-iva-pct', '16')
+    setMoney('d-iva-base', 0)
+    setMoney('d-base', 0)
+    setMoney('d-otros', 0)
+    setMoney('d-iva', 0)
+    setMoney('d-total', 0)
+    calcDivisas()
+    render()
+    return
+  }
+
+  if (!conIva) {
+    base = otros
+    otros = 0
+  }
+  const iva = conIva ? base * IVA_RATE : 0
+
+  setVal('d-iva-pct', '16')
+  setMoney('d-iva-base', conIva ? base : 0)
+  setMoney('d-base', base)
+  setMoney('d-otros', otros)
+  setMoney('d-iva', iva)
+  setMoney('d-total', base + iva + otros)
+  calcDivisas()
+  render()
+}
+
+async function fetchTasa() {
+  const el = document.getElementById('d-tasa')
+  const msg = document.getElementById('d-tasa-msg')
+  if (!el) return
+  if (msg) msg.textContent = ''
+  try {
+    const res = await fetch(TASA_URL)
+    const json = await res.json()
+    const price = Number(json && json.data && json.data.price)
+    if (price > 0) {
+      el.value = fmtTasa(price)
+      calcDivisas()
+      render()
+      if (msg) msg.textContent = 'Tasa actualizada: ' + fmtTasa(price)
+    } else if (msg) {
+      msg.textContent = 'La API no devolvió una tasa válida.'
+    }
+  } catch (e) {
+    if (msg) msg.textContent = 'No se pudo cargar la tasa.'
+  }
+}
+
 function render() {
   // Emisión
   text(document.querySelector('.top-bar .lugar-text'), val('d-lugar'))
@@ -362,7 +466,7 @@ function render() {
     text(inner(cells[5]), r.monto)
   })
 
-  // Totales (todos manuales)
+  // Totales
   text(slot(document.querySelector('.totals-labels-col .blank-pct')), val('d-iva-pct'))
   const labelMontos = document.querySelectorAll('.totals-labels-col .blank-monto')
   text(slot(labelMontos[0]), val('d-iva-base'))
@@ -424,7 +528,11 @@ export function initData() {
   const state = saved || readFromDom()
   if (!state.totales) state.totales = {}
   applyState(state)
+  ;['d-base', 'd-otros', 'd-iva', 'd-igtf', 'd-total'].forEach((id) => setVal(id, fmt(0)))
+  setVal('d-iva-pct', '16')
   render()
+  calcTotales()
+  fetchTasa()
 
   ;[['d-dia', 2], ['d-mes', 2], ['d-anio', 4]].forEach((pair) => {
     const el = document.getElementById(pair[0])
@@ -447,6 +555,26 @@ export function initData() {
   ;['d-iva-base', 'd-igtf-base', 'd-base', 'd-otros', 'd-iva', 'd-igtf', 'd-total'].forEach((id) => {
     document.getElementById(id).addEventListener('blur', function () { formatMoneyField(this); render() })
   })
+
+  // Totales automáticos: los renglones mandan; los campos siguen editables.
+  const rowsWrap = document.getElementById('d-rows')
+  rowsWrap.addEventListener('input', (ev) => {
+    const row = ev.target.closest('.d-row')
+    if (row && ev.target.matches('.d-cant, .d-precio')) calcMonto(row)
+    calcTotales(true)
+  })
+  rowsWrap.addEventListener('change', () => calcTotales(true))
+
+  ;['d-base', 'd-otros', 'd-iva'].forEach((id) => {
+    document.getElementById(id).addEventListener('input', () => {
+      setMoney('d-total', num(val('d-base')) + num(val('d-otros')) + num(val('d-iva')))
+      calcDivisas()
+      render()
+    })
+  })
+  document.getElementById('d-total').addEventListener('input', () => { calcDivisas(); render() })
+  document.getElementById('d-tasa').addEventListener('input', () => { calcDivisas(); render() })
+  document.getElementById('d-tasa-auto').addEventListener('click', fetchTasa)
 
   document.querySelectorAll('#dataPanel input, #dataPanel textarea').forEach((el) => {
     el.addEventListener('input', function () { this.title = this.value; render() })
